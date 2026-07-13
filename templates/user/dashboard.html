@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Treks - Trekking Management Application{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Available Treks</h2>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body bg-light">
+        <form method="GET" action="{{ url_for('user.dashboard') }}" class="row g-3 align-items-center">
+            <div class="col-md-5">
+                <input type="text" class="form-control" name="search" placeholder="Search by name or location..." value="{{ search }}">
+            </div>
+            <div class="col-md-4">
+                <select class="form-select" name="difficulty">
+                    <option value="">All Difficulties</option>
+                    <option value="Easy" {% if difficulty == 'Easy' %}selected{% endif %}>Easy</option>
+                    <option value="Moderate" {% if difficulty == 'Moderate' %}selected{% endif %}>Moderate</option>
+                    <option value="Hard" {% if difficulty == 'Hard' %}selected{% endif %}>Hard</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    {% if treks %}
+        {% for trek in treks %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">{{ trek.name }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted"><i class="bi bi-geo-alt"></i> {{ trek.location }}</h6>
+                    <p class="card-text mt-3">
+                        <strong>Difficulty:</strong> {{ trek.difficulty }}<br>
+                        <strong>Duration:</strong> {{ trek.duration }} days<br>
+                        <strong>Dates:</strong> {{ trek.start_date }} to {{ trek.end_date }}<br>
+                        <strong>Available Slots:</strong> {{ trek.available_slots }} / {{ trek.total_slots }}
+                    </p>
+                </div>
+                <div class="card-footer bg-white border-top-0 pb-3">
+                    <a href="{{ url_for('user.trek_details', id=trek.id) }}" class="btn btn-outline-primary w-100">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">No treks found matching your criteria.</div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

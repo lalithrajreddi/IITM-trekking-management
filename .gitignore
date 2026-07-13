@@ -1,0 +1,10 @@
+venv/
+__pycache__/
+instance/
+*.db
+.env
+info/
+Report/
+Report_references/
+server_commands.txt
+seed_db.py

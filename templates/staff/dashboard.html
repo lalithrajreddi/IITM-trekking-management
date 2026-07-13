@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Staff Dashboard - Trekking Management Application{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Staff Dashboard</h2>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card text-white bg-primary mb-3 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">My Assigned Treks</h5>
+                <h2 class="card-text">{{ total_assigned }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card text-white bg-success mb-3 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Total Participants</h5>
+                <h2 class="card-text">{{ total_participants }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <h5 class="mb-0">My Treks</h5>
+    </div>
+    <div class="card-body">
+        {% if treks %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Location</th>
+                            <th>Dates</th>
+                            <th>Slots (Avail/Total)</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for trek in treks %}
+                        <tr>
+                            <td>{{ trek.id }}</td>
+                            <td>{{ trek.name }}</td>
+                            <td>{{ trek.location }}</td>
+                            <td>{{ trek.start_date }} to {{ trek.end_date }}</td>
+                            <td>{{ trek.available_slots }} / {{ trek.total_slots }}</td>
+                            <td>
+                                <span class="badge {% if trek.status == 'Open' %}bg-success{% elif trek.status == 'Closed' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                    {{ trek.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('staff.manage_trek', id=trek.id) }}" class="btn btn-sm btn-outline-primary">Manage</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted">You have no assigned treks yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

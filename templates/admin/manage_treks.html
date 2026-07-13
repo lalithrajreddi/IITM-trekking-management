@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Treks - Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Manage Treks</h2>
+    <a href="{{ url_for('admin.create_trek') }}" class="btn btn-primary fw-bold">+ Add New Trek</a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% if treks %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Dates</th>
+                        <th>Slots (Avail/Total)</th>
+                        <th>Assigned Staff</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trek in treks %}
+                    <tr>
+                        <td>{{ trek.id }}</td>
+                        <td>{{ trek.name }}</td>
+                        <td>{{ trek.location }}</td>
+                        <td>{{ trek.start_date }} to {{ trek.end_date }}</td>
+                        <td>{{ trek.available_slots }} / {{ trek.total_slots }}</td>
+                        <td>{{ trek.manager.full_name if trek.manager else 'None' }}</td>
+                        <td>
+                            <span class="badge {% if trek.status == 'Open' %}bg-success{% elif trek.status == 'Closed' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                {{ trek.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ url_for('admin.edit_trek', id=trek.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                            <form action="{{ url_for('admin.delete_trek', id=trek.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this trek?');">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <p class="text-muted">No treks found. Create one to get started!</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

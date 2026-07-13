@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}{{ trek.name }} - Trek Details{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-secondary">&larr; Back to Treks</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h2 class="text-primary mb-3">{{ trek.name }}</h2>
+                <div class="d-flex flex-wrap gap-3 mb-4 text-muted">
+                    <span><strong>Location:</strong> {{ trek.location }}</span>
+                    <span><strong>Difficulty:</strong> {{ trek.difficulty }}</span>
+                    <span><strong>Duration:</strong> {{ trek.duration }} days</span>
+                </div>
+                
+                <h5>Description</h5>
+                <p>{{ trek.description or "No description provided." }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Booking Information</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush mb-4">
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        Start Date
+                        <span class="fw-bold">{{ trek.start_date }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        End Date
+                        <span class="fw-bold">{{ trek.end_date }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        Available Slots
+                        <span class="badge {% if trek.available_slots > 0 %}bg-success{% else %}bg-danger{% endif %} rounded-pill">
+                            {{ trek.available_slots }} / {{ trek.total_slots }}
+                        </span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        Status
+                        <span class="fw-bold text-primary">{{ trek.status }}</span>
+                    </li>
+                </ul>
+                
+                {% if existing_booking %}
+                    <div class="alert alert-info text-center">
+                        You have already booked this trek.<br>
+                        <strong>Status:</strong> {{ existing_booking.status }}
+                    </div>
+                    <a href="{{ url_for('user.my_bookings') }}" class="btn btn-secondary w-100">View My Bookings</a>
+                {% elif trek.status != 'Open' %}
+                    <button class="btn btn-secondary w-100" disabled>Trek not open for booking</button>
+                {% elif trek.available_slots <= 0 %}
+                    <button class="btn btn-danger w-100" disabled>Fully Booked</button>
+                {% else %}
+                    <form method="POST" action="{{ url_for('user.book_trek', id=trek.id) }}">
+                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2" onclick="return confirm('Are you sure you want to book this trek?');">
+                            Book Now
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
