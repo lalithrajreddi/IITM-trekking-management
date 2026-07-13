@@ -56,10 +56,12 @@ def create_trek():
         difficulty = request.form.get('difficulty')
         duration = int(request.form.get('duration'))
         slots = int(request.form.get('slots'))
-        start_date = datetime.strptime(request.form.get('start_date'), '%Y-%m-%d').date()
-        end_date = datetime.strptime(request.form.get('end_date'), '%Y-%m-%d').date()
+        start_date = request.form.get('start_date')
+        end_date = request.form.get('end_date')
         description = request.form.get('description')
         staff_id = request.form.get('staff_id')
+        staff_id = int(staff_id) if staff_id else None
+        status = request.form.get('status', 'Open')
         
         new_trek = Trek(
             name=name,
@@ -68,10 +70,11 @@ def create_trek():
             duration=duration,
             available_slots=slots,
             total_slots=slots,
-            start_date=start_date,
-            end_date=end_date,
+            start_date=datetime.strptime(start_date, '%Y-%m-%d').date(),
+            end_date=datetime.strptime(end_date, '%Y-%m-%d').date(),
             description=description,
-            staff_id=staff_id if staff_id else None
+            staff_id=staff_id,
+            status=status
         )
         
         db.session.add(new_trek)
@@ -103,7 +106,9 @@ def edit_trek(id):
         trek.start_date = datetime.strptime(request.form.get('start_date'), '%Y-%m-%d').date()
         trek.end_date = datetime.strptime(request.form.get('end_date'), '%Y-%m-%d').date()
         trek.description = request.form.get('description')
-        trek.staff_id = request.form.get('staff_id') or None
+        staff_id = request.form.get('staff_id')
+        trek.staff_id = int(staff_id) if staff_id else None
+        trek.status = request.form.get('status', trek.status)
         
         db.session.commit()
         flash('Trek updated successfully!', 'success')

@@ -32,7 +32,7 @@ class Trek(db.Model):
     total_slots = db.Column(db.Integer, nullable=False)
     start_date = db.Column(db.Date, nullable=False)
     end_date = db.Column(db.Date, nullable=False)
-    status = db.Column(db.String(20), nullable=False, default='Pending') # Pending, Approved, Open, Closed, Completed
+    status = db.Column(db.String(20), nullable=False, default='Open') # Open, Closed, Completed
     description = db.Column(db.Text, nullable=True)
     
     # Foreign Key for Staff Manager
