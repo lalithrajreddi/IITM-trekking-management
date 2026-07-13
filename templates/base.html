@@ -27,6 +27,8 @@
                     {% if current_user.role == 'admin' %}
                         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('admin.dashboard') }}">Dashboard</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('admin.manage_treks') }}">Treks</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('admin.all_bookings') }}">Bookings</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('admin.manage_users') }}">Users</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('admin.manage_staff') }}">Staff</a></li>
                     {% elif current_user.role == 'staff' %}
                         <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('staff.dashboard') }}">Dashboard</a></li>
@@ -41,8 +43,10 @@
                             {{ current_user.full_name }} ({{ current_user.role|capitalize }})
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#">Profile</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            {% if current_user.role == 'user' %}
+                                <li><a class="dropdown-item" href="{{ url_for('user.profile') }}">Profile</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            {% endif %}
                             <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a></li>
                         </ul>
                     </li>

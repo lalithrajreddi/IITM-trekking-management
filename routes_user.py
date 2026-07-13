@@ -90,3 +90,24 @@ def my_bookings():
 def history():
     bookings = Booking.query.filter_by(user_id=current_user.id).filter(Booking.status.in_(['Completed', 'Cancelled'])).all()
     return render_template('user/history.html', bookings=bookings)
+
+@user_bp.route('/profile', methods=['GET', 'POST'])
+@login_required
+@user_required
+def profile():
+    if request.method == 'POST':
+        full_name = request.form.get('full_name')
+        contact = request.form.get('contact')
+        
+        # Only simple fields are updated to avoid complex password resets for now,
+        # but password can be added if needed.
+        if full_name:
+            current_user.full_name = full_name
+        if contact:
+            current_user.contact = contact
+            
+        db.session.commit()
+        flash('Profile updated successfully!', 'success')
+        return redirect(url_for('user.profile'))
+        
+    return render_template('user/profile.html', user=current_user)

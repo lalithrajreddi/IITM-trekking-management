@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}All Bookings - Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>All Historical Bookings</h2>
+    <form class="d-flex" method="GET" action="{{ url_for('admin.all_bookings') }}">
+        <input class="form-control me-2" type="search" placeholder="Search by trek or user..." name="search" value="{{ search }}">
+        <button class="btn btn-outline-primary" type="submit">Search</button>
+    </form>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% if bookings %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>User Name</th>
+                        <th>User Email</th>
+                        <th>Trek Name</th>
+                        <th>Date Booked</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td class="fw-bold">#{{ booking.id }}</td>
+                        <td>{{ booking.user.full_name }}</td>
+                        <td>{{ booking.user.email }}</td>
+                        <td>{{ booking.trek.name }}</td>
+                        <td>{{ booking.booking_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>
+                            <span class="badge {% if booking.status == 'Completed' %}bg-success{% elif booking.status == 'Cancelled' %}bg-danger{% else %}bg-primary{% endif %}">
+                                {{ booking.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted mb-0">No bookings found.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

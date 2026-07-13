@@ -3,7 +3,7 @@ __pycache__/
 instance/
 *.db
 .env
-info/
+Info/
 Report/
 Report_references/
 server_commands.txt

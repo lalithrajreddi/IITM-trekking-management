@@ -37,8 +37,12 @@ def dashboard():
 @login_required
 @admin_required
 def manage_treks():
-    treks = Trek.query.all()
-    return render_template('admin/manage_treks.html', treks=treks)
+    search = request.args.get('search', '')
+    query = Trek.query
+    if search:
+        query = query.filter(Trek.name.ilike(f'%{search}%') | Trek.location.ilike(f'%{search}%'))
+    treks = query.all()
+    return render_template('admin/manage_treks.html', treks=treks, search=search)
 
 @admin_bp.route('/trek/create', methods=['GET', 'POST'])
 @login_required
@@ -127,8 +131,12 @@ def delete_trek(id):
 @login_required
 @admin_required
 def manage_staff():
-    staff_members = User.query.filter_by(role='staff').all()
-    return render_template('admin/manage_staff.html', staff_members=staff_members)
+    search = request.args.get('search', '')
+    query = User.query.filter_by(role='staff')
+    if search:
+        query = query.filter(User.full_name.ilike(f'%{search}%') | User.email.ilike(f'%{search}%'))
+    staff_members = query.all()
+    return render_template('admin/manage_staff.html', staff_members=staff_members, search=search)
 
 @admin_bp.route('/staff/<int:id>/status', methods=['POST'])
 @login_required
@@ -145,3 +153,47 @@ def update_staff_status(id):
         flash('Invalid status.', 'danger')
         
     return redirect(url_for('admin.manage_staff'))
+
+@admin_bp.route('/users')
+@login_required
+@admin_required
+def manage_users():
+    search = request.args.get('search', '')
+    query = User.query.filter_by(role='user')
+    if search:
+        query = query.filter(User.full_name.ilike(f'%{search}%') | User.email.ilike(f'%{search}%'))
+    users = query.all()
+    return render_template('admin/manage_users.html', users=users, search=search)
+
+@admin_bp.route('/users/<int:id>/status', methods=['POST'])
+@login_required
+@admin_required
+def update_user_status(id):
+    user = db.get_or_404(User, id)
+    new_status = request.form.get('status')
+    
+    if new_status in ['approved', 'blacklisted']:
+        user.status = new_status
+        db.session.commit()
+        flash(f'User status updated to {new_status}.', 'success')
+    else:
+        flash('Invalid status.', 'danger')
+        
+    return redirect(url_for('admin.manage_users'))
+
+@admin_bp.route('/bookings')
+@login_required
+@admin_required
+def all_bookings():
+    search = request.args.get('search', '')
+    query = Booking.query.join(Trek).join(User)
+    
+    if search:
+        query = query.filter(
+            Trek.name.ilike(f'%{search}%') | 
+            User.full_name.ilike(f'%{search}%') |
+            User.email.ilike(f'%{search}%')
+        )
+        
+    bookings = query.order_by(Booking.booking_date.desc()).all()
+    return render_template('admin/all_bookings.html', bookings=bookings, search=search)
